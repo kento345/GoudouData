@@ -1,0 +1,204 @@
+[33mcommit 0fb5d73608387b272895955ac8f448cec74d8a89[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mkento[m[33m, [m[1;31morigin/kento[m[33m)[m
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Fri Jun 12 19:49:21 2026 +0900
+
+    Playerの初期化、修正
+
+ Assets/Prot/Prefabs/PlayerStatusPanel.prefab       | 114 [32m+++++++[m[31m--[m
+ Assets/Prot/Start.unity                            | 260 [32m++++++++++++++++++++[m[31m-[m
+ Assets/Prot/prot.unity                             | 176 [32m+[m[31m-------------[m
+ Assets/Prot/title_UI.unity                         |   2 [32m+[m[31m-[m
+ Assets/Yuge/UI/Result_UI/Result_UI.unity           |  32 [32m+[m[31m--[m
+ Assets/Yuge/UI/inGame_UI.meta                      |   8 [32m+[m
+ Assets/Yuge/UI/inGame_UI/1P_color.png              |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/1P_color.png.meta         | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/1P_gray.png               |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/1P_gray.png.meta          | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/2P_color.png              |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/2P_color.png.meta         | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/2P_gray.png               |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/2P_gray.png.meta          | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/3P_color.png              |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/3P_color.png.meta         | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/3P_gray.png               |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/3P_gray.png.meta          | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/4P_color.png              |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/4P_color.png.meta         | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/4P_gray.png               |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/4P_gray.png.meta          | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/Star_color.png            |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/Star_color.png.meta       | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/Star_gray.png             |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/Star_gray.png.meta        | 117 [32m++++++++++[m
+ Assets/Yuge/UI/inGame_UI/crown.png                 |   3 [32m+[m
+ Assets/Yuge/UI/inGame_UI/crown.png.meta            | 117 [32m++++++++++[m
+ Assets/kento/Script/Delete/MainManager.cs          |   1 [32m+[m
+ .../kento/Script/PlayerScript/AtackController.cs   |  30 [32m++[m[31m-[m
+ .../PlayerScript/Player/PlayerInputController.cs   |   3 [32m+[m[31m-[m
+ .../Script/PlayerScript/PlayerStateManager.cs      |  11 [32m+[m[31m-[m
+ Assets/kento/Script/PlayerScript/Reception.cs      |   8 [32m+[m[31m-[m
+ ProjectSettings/ProjectSettings.asset              |   2 [32m+[m[31m-[m
+ 34 files changed, 1748 insertions(+), 219 deletions(-)
+
+[33mcommit 931a49f524dfda27b4155ac2903d6b785950157e[m
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Fri Jun 12 18:22:32 2026 +0900
+
+    Player初期化途中
+
+ Assets/Prot/Start.unity                            | 20 [32m++++++++++++++[m[31m--[m
+ .../kento/Script/PlayerScript/AtackController.cs   | 28 [32m+++++++++++++++++++++[m[31m-[m
+ Assets/kento/Script/PlayerScript/ChargeSpike.cs    | 17 [32m++++++++++++[m[31m-[m
+ Assets/kento/Script/PlayerScript/Initalize.cs      |  6 [32m+++++[m
+ Assets/kento/Script/PlayerScript/Initalize.cs.meta |  2 [32m++[m
+ Assets/kento/Script/PlayerScript/MoveController.cs | 16 [32m++++++++++++[m[31m-[m
+ .../PlayerScript/Player/PlayerInputController.cs   |  7 [32m+++++[m[31m-[m
+ Assets/kento/Script/PlayerScript/Reception.cs      | 25 [32m++++++++++++++++++[m[31m-[m
+ Assets/kento/player/1PColor/1player.mat            |  8 [32m++++[m[31m---[m
+ Assets/kento/player/2PColor/2player.mat            | 10 [32m++++[m[31m----[m
+ Assets/kento/player/3PColor/3player.mat            |  9 [32m+++[m[31m----[m
+ Assets/kento/player/4PColor/4player.mat            |  9 [32m+++[m[31m----[m
+ 12 files changed, 134 insertions(+), 23 deletions(-)
+
+[33mcommit 67c88d7e223759c751b5049e50ff6007bc348325[m
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Mon Jun 8 19:45:27 2026 +0900
+
+    バグ:Playerが吹っ飛んでいるときに非表示にすると次表示したとき吹っ飛んでいく
+    修正方法:OnEnableですべての状態初期化する,初期化処理を作っておく
+
+ Assets/_Recovery/0 (1).unity      |  Bin [31m131100[m -> [32m160158[m bytes
+ Assets/_Recovery/0 (2).unity      | 3557 [32m+++++++++++++++++++++++++++++++++++++[m
+ Assets/_Recovery/0 (2).unity.meta |    7 [32m+[m
+ 3 files changed, 3564 insertions(+)
+
+[33mcommit 3614720494af518d8b51713286b5c8536399f7ae[m
+Merge: f2ecb3c 76e258c
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Mon Jun 8 19:25:44 2026 +0900
+
+    Merge branch 'Miwa' into kento
+
+[33mcommit 76e258c31cea34a3a721e41bb5772c548db1bb44[m[33m ([m[1;32mMiwa[m[33m)[m
+Author: Miwa <>
+Date:   Mon Jun 8 19:12:25 2026 +0900
+
+    作業内容
+    Playerの生成バグを修正
+
+ Assets/Miwa/scripts/New Folder/GameManager_M.cs    |  99 [32m+++++++++[m[31m----[m
+ Assets/Miwa/scripts/New Folder/GameUIManager_M.cs  |  20 [32m++[m[31m-[m
+ .../scripts/New Folder/PlayerStateManager_M.cs     | 154 [32m++++++++++++++++[m[31m-----[m
+ Assets/_Recovery/0 (1).unity                       | Bin [31m0[m -> [32m131100[m bytes
+ Assets/_Recovery/0 (1).unity.meta                  |   7 [32m+[m
+ 5 files changed, 214 insertions(+), 66 deletions(-)
+
+[33mcommit 547d1ce5e0f4e4e5b60431e1c7c70eaf435cd97c[m
+Merge: 0d42fd8 79f4886
+Author: Miwa <>
+Date:   Mon Jun 8 17:15:14 2026 +0900
+
+    Merge remote-tracking branch 'origin/kento' into Miwa
+
+[33mcommit f2ecb3cb0c94d2464518a1d9ae845718726df73a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: yuge430 <yuruge430@yahoo.co.jp>
+Date:   Mon Jun 8 16:30:09 2026 +0900
+
+    プレイヤープレハブの板ポリを削除
+
+ Assets/Prot/Playerprefab/ProtPlayer/Player.prefab | 114 [31m----------------------[m
+ 1 file changed, 114 deletions(-)
+
+[33mcommit c7ab115a09aaf8dbf5cd2d427cd0d943f04b7c2d[m
+Author: yuge430 <yuruge430@yahoo.co.jp>
+Date:   Mon Jun 8 15:58:19 2026 +0900
+
+    クレジットにおうちゃんと山さん追加
+
+ Assets/Prot/title_UI.unity                      | 362 [32m++++++++++++++++[m[31m-[m
+ Assets/Yuge/UI/Title_UI/Credit.anim             | 512 [32m++++++++++++++++++++++++[m
+ Assets/Yuge/UI/Title_UI/Special thanks.png      |   3 [32m+[m
+ Assets/Yuge/UI/Title_UI/Special thanks.png.meta | 130 [32m++++++[m
+ 4 files changed, 1002 insertions(+), 5 deletions(-)
+
+[33mcommit 79f48863dc167b43f41477559253187c75a5bfae[m
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Mon Jun 8 15:07:25 2026 +0900
+
+    完成:参加画面のUIの変更,
+    課題:Playerが死んだ時に非表示にした後次のラウンドで表示しないといけない,
+
+ .github/copilot-instructions.md                    |    3 [32m+[m
+ Assets/Prot/Start.unity                            | 3030 [32m++++++++++++[m[31m--------[m
+ Assets/Yuge/UI/player_join_UI/Player_join.unity    |   24 [32m+[m[31m-[m
+ Assets/kento/Script/Delete/JoineManager.cs         |   34 [32m+[m[31m-[m
+ Assets/kento/Script/ItemScript/ItemController.cs   |    2 [32m+[m[31m-[m
+ Assets/kento/Script/ItemScript/PlayerItemEffect.cs |   31 [32m+[m[31m-[m
+ 6 files changed, 1908 insertions(+), 1216 deletions(-)
+
+[33mcommit a1a9169d6dda5e0b7aa02af1a3f6b2b047b7b896[m
+Author: Tsutinaga <tsutinagakousei@gmail.com>
+Date:   Mon Jun 8 11:19:00 2026 +0900
+
+    コードレビューレポートを追加（2026-06-08）
+    
+    Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+ .../2026-06-08_bug-investigation-core-systems.md   | 201 [32m+++++++++++++++++++++[m
+ 1 file changed, 201 insertions(+)
+
+[33mcommit 6c4e007849a3c301d3f2a57d189fe8a20e822970[m
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Sat Jun 6 22:31:58 2026 +0900
+
+    Player,BOTの開始直後の動きを止める
+
+ Assets/Prot/Playerprefab/ProtPlayer/Player.prefab  | 114 [31m---------------------[m
+ Assets/kento/Script/ItemScript/PlayerItemEffect.cs |   3 [32m+[m[31m-[m
+ 2 files changed, 1 insertion(+), 116 deletions(-)
+
+[33mcommit 6454422666bdbddd43202f11725da1e8b2103756[m
+Merge: 63c8b51 1bcb377
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Sat Jun 6 22:23:20 2026 +0900
+
+    Merge branch 'main' into kento
+    
+    # Conflicts:
+    #       Assets/Prot/Start.unity
+    #       Assets/kento/Script/Delete/MainManager.cs
+
+[33mcommit 0d42fd80438c9f27d98ccf922c67fa6f4e0b2e7c[m
+Author: Mirohu-gohan <ktc24a31a0065@edu.kyoto-tech.ac.jp>
+Date:   Sat Jun 6 22:12:45 2026 +0900
+
+    作業内容
+    カメラの範囲外に出るとデスするように修正
+
+ Assets/Miwa/scripts/New Folder/PlayerStateManager_M.cs | 11 [32m+++++++[m[31m----[m
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+[33mcommit 1bcb377f3a7817df784f1b0806cf691a8546e6b9[m
+Merge: c939ee5 bc213d2
+Author: Mirohu-gohan <ktc24a31a0065@edu.kyoto-tech.ac.jp>
+Date:   Sat Jun 6 21:55:35 2026 +0900
+
+    Miwaブランチをマージ
+
+[33mcommit 63c8b51263a253962e86c5727f69ca3abeadbb57[m
+Author: K\Kento <KTC24A31A0043@edu.kyoto-tech.ac.jp>
+Date:   Sat Jun 6 21:40:28 2026 +0900
+
+    BOTのPlayerHelthの登録,
+
+ .../scripts/New Folder/PlayerStateManager_M.cs     |  2 [32m++[m
+ Assets/Prot/Start.unity                            | 24 [32m+++++++++++++++++++[m
+ Assets/kento/Script/Delete/MainManager.cs          | 27 [32m++++++++++[m[31m------------[m
+ 3 files changed, 38 insertions(+), 15 deletions(-)
+
+[33mcommit c939ee5290ddc5f98eb9ef4ca27cd400ba20c617[m
+Merge: 8e3f97e b000882
+Author: Mirohu-gohan <ktc24a31a0065@edu.kyoto-tech.ac.jp>
+Date:   Sat Jun 6 21:17:54 2026 +0900
+
+    Merge branch 'yuge'
